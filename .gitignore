@@ -176,3 +176,4 @@ cython_debug/
 # Project specific files
 prices.txt
 pricesUnit.txt
+pricesUnitHtmlResponse.txt
