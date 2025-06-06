@@ -5,7 +5,7 @@ from selenium import webdriver
 
 def main(file_name):
     # URL for prices of the apartments
-    url = "https://arizona.weidner.com/apartments/az/mesa/reflect-at-dobson-ranch/floorplans?Beds=2"
+    url = "https://arizona.weidner.com/apartments/az/mesa/reflect-at-dobson-ranch/floorplans"
      # Initialize driver
     driver = webdriver.Chrome()
 
@@ -19,19 +19,22 @@ def main(file_name):
     # Search the returned html for what we're looking for, prices for 2 bed apartments
     responseText = driver.page_source
 
+    responseText = responseText.replace('\u2212','')
+    responseText = responseText.replace('\u200e','')
+
     # Loop through all apartment floorplans and get the prices
     for i in range(0, 10):
         # Narrow the search to smaller subsection of the returned HTML
         index = str.find(responseText, "Starting at")
-        searchText = responseText[index:index+700]
+        searchText = responseText[index:index+1500]
         # Find the dollar value in the search text
         index_of_dollar = str.find(searchText, "$")
         value = searchText[index_of_dollar:index_of_dollar+6]
         # Find the name in the search text
         index_of_name = str.find(searchText, "/floorplans/")
         #pdb.set_trace()
-        index_of_questionmark = str.find(searchText[index_of_name:], '?')
-        name = searchText[index_of_name+len("/floorplans/"):index_of_name+index_of_questionmark]
+        index_of_double_quote = str.find(searchText[index_of_name:], '"')
+        name = searchText[index_of_name+len("/floorplans/"):index_of_name+index_of_double_quote]
 
         # Save the name and value to the file
         file.write(name + ": " + value + "\n")
@@ -44,7 +47,7 @@ def main(file_name):
                 file.write(details[i])
 
         # Remove the already found value from the text
-        responseText = responseText[index+index_of_name + index_of_questionmark:]
+        responseText = responseText[index+index_of_name + index_of_double_quote:]
 
     # Add space for next day
     file.write("\n")
