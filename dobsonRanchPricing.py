@@ -32,16 +32,19 @@ def main(file_name):
         value = searchText[index_of_dollar:index_of_dollar+6]
         # Find the name in the search text
         index_of_name = str.find(searchText, "/floorplans/")
-        #pdb.set_trace()
         index_of_double_quote = str.find(searchText[index_of_name:], '"')
         name = searchText[index_of_name+len("/floorplans/"):index_of_name+index_of_double_quote]
 
-        # Save the name and value to the file
-        file.write(name + ": " + value + "\n")
+        # If the length of the name is greater than 20, it couldn't be found, so move to next
+        if(len(name) > 20):
+            responseText = responseText[index+1500:]
+        else:
+            # Save the name and value to the file
+            file.write(name + ": " + value + "\n")
         
         if(name == 'luna' or name == 'castello' or name == 'artesa'):
             # Call the other file to get the unit number and specific prices
-            details = dobsonRanchSpecificPricingUnits.get_floorplan_details(name, file_name=file_name)
+            details = dobsonRanchSpecificPricingUnits.get_floorplan_details(name)
             
             for i in range (0, len(details)):
                 file.write(details[i])
@@ -49,13 +52,14 @@ def main(file_name):
         # Remove the already found value from the text
         responseText = responseText[index+index_of_name + index_of_double_quote:]
 
+    # Close the browser
+    driver.close()
+
     # Add space for next day
     file.write("\n")
 
+    # Close the file
     file.close()
-
-    # Close the browser
-    driver.close()
     
 if __name__ == '__main__':
     main('prices.txt')

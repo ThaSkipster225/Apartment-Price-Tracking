@@ -59,7 +59,7 @@ def main(floorplan, file_name):
     file.close()
     
 
-def get_floorplan_details(floorplan, file_name):
+def get_floorplan_details(floorplan):
     # URL for prices of the apartments
     url = f"https://arizona.weidner.com/apartments/az/mesa/reflect-at-dobson-ranch/floorplans/{floorplan}"
 
@@ -101,8 +101,11 @@ def get_floorplan_details(floorplan, file_name):
             cost_index = str.find(response_text, "Starting at:")
             cost = response_text[cost_index+20 : cost_index+26]
             
-            # Save the name and value to the file
-            apartment_details.append("Apartment: " + apartment_number + " - Monthly Rent: " + cost + " - " + "Date Available: " + date_available + "\n")
+            if(int(cost.replace('$','').replace(',','')) < 1875):
+                apartment_details.append("Apartment: " + apartment_number + " - Monthly Rent: " + cost + " - " + "Date Available: " + date_available + " ------IMPORTANT-----" + "\n")
+            else:
+                # Save the name and value to the file
+                apartment_details.append("Apartment: " + apartment_number + " - Monthly Rent: " + cost + " - " + "Date Available: " + date_available + "\n")
 
             # Remove the already found apartment from the response
             response_text = response_text[cost_index+26:]
